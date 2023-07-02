@@ -2,8 +2,8 @@ import time
 import pyupbit
 import datetime
 
-access = "your- access"
-secret = "your- secret"
+access = "8x3BlsMEiVmYqxrI66OpV8Fd3GJERNaB3oZiFRJO"
+secret = "mIx1IOAJXWDYxK3QB2UdxYDesVKCxQdwMuuh4GiK"
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략으로 매수 목표가 조회"""
@@ -49,6 +49,10 @@ upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 
 # 자동매매 시작
+bought_price = 0  # Initialize bought_price variable
+trailing_stop_pct = 0.05  # Trailing stop loss percentage
+partial_profit_pct = 0.2  # Percentage of assets to sell for partial profit
+
 while True:
     try:
         now = datetime.datetime.now()
@@ -66,11 +70,17 @@ while True:
                     buy_price = min(current_price, target_price)  # Adjusted buy price
                     upbit.buy_market_order("KRW-BTC", krw * 0.9995, price=buy_price)  # Specify buy price
                     bought_price = buy_price  # Store the bought price for trailing stop loss
-            elif current_price < bought_price * 0.95:  # Implement trailing stop loss at 5%
+            elif current_price < bought_price * (1 - trailing_stop_pct):  # Trailing stop loss
                 btc = get_balance("BTC")
                 if btc > 0:
                     sell_price = get_current_price("KRW-BTC")  # Adjusted sell price
-                    upbit.sell_market_order("KRW-BTC", btc * 0.9995, price=sell_price)  # Specify sell price
+                    if current_price < bought_price * (1 - trailing_stop_pct * 2):
+                        # Sell a portion of assets for partial profit if price drops further
+                        sell_amount = btc * partial_profit_pct
+                    else:
+                        # Sell all assets if price drops below trailing stop loss
+                        sell_amount = btc
+                    upbit.sell_market_order("KRW-BTC", sell_amount * 0.9995, price=sell_price)  # Specify sell price
         else:
             btc = get_balance("BTC")
             if btc > 0:

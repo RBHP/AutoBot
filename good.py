@@ -42,7 +42,7 @@ def get_balance(ticker):
 
 def get_current_price(ticker):
     """현재가 조회"""
-    return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["trade_price"]
+    return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)
@@ -64,13 +64,13 @@ while True:
             ma15 = get_ma15("KRW-BTC")
             ma50 = get_ma50("KRW-BTC")
             current_price = get_current_price("KRW-BTC")
-            if current_price > target_price and current_price > ma15:
+            if current_price is not None and current_price > target_price and current_price > ma15:
                 krw = get_balance("KRW")
                 if krw > 5000:
                     buy_price = min(current_price, target_price)  # Adjusted buy price
                     upbit.buy_market_order("KRW-BTC", krw * 0.9995, price=buy_price)  # Specify buy price
                     bought_price = buy_price  # Store the bought price for trailing stop loss
-            elif current_price < bought_price * (1 - trailing_stop_pct):  # Trailing stop loss
+            elif current_price is not None and current_price < bought_price * (1 - trailing_stop_pct):  # Trailing stop loss
                 btc = get_balance("BTC")
                 if btc > 0:
                     sell_price = get_current_price("KRW-BTC")  # Adjusted sell price
@@ -85,7 +85,7 @@ while True:
             btc = get_balance("BTC")
             if btc > 0:
                 ma50 = get_ma50("KRW-BTC")  # Get ma50 value
-                if current_price <= ma50:  # Sell all assets if price is below ma50
+                if current_price is not None and current_price <= ma50:  # Sell all assets if price is below ma50
                     sell_price = get_current_price("KRW-BTC")  # Adjusted sell price
                     upbit.sell_market_order("KRW-BTC", btc * 0.9995, price=sell_price)  # Specify sell price
         time.sleep(1)

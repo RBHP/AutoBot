@@ -2,8 +2,8 @@ import time
 import pyupbit
 import datetime
 
-access = "your- access"
-secret = "your- secret"
+access = "your-access-key"
+secret = "your-secret-key"
 
 def get_target_price(ticker, k):
     """변동성 돌파 전략으로 매수 목표가 조회"""
@@ -31,7 +31,7 @@ def get_ma50(ticker):
 
 def get_balance(ticker):
     """잔고 조회"""
-    balances = upbit.get_balances()
+    balances = pyupbit.get_balances()
     for b in balances:
         if b['currency'] == ticker:
             if b['balance'] is not None:
@@ -42,7 +42,7 @@ def get_balance(ticker):
 
 def get_current_price(ticker):
     """현재가 조회"""
-    return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
+    return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["trade_price"]
 
 # 로그인
 upbit = pyupbit.Upbit(access, secret)

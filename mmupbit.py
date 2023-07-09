@@ -24,7 +24,7 @@ def get_macd(ticker, interval):
     df = pyupbit.get_ohlcv(ticker, interval=interval)
     close = df['close']
     macd, macdsignal, macdhist = talib.MACD(close)
-    return macd, macdsignal, macdhist
+    return list(macd), list(macdsignal), list(macdhist)
 
 def get_ma50(ticker, interval):
     """MA50 일선 조회"""
@@ -70,7 +70,7 @@ while True:
                 if cross_diff > 4 and cross_diff < 6.5:
                     krw = upbit.get_balance("KRW")
                     if krw > 5000:
-                        upbit.buy_market_order(ticker, krw * 0.9995, leverage=20)
+                        upbit.buy_market_order(ticker, krw * 0.9995, leverage=1)
 
         else:
             ticker = "KRW-BTC"
@@ -79,7 +79,7 @@ while True:
             if current_price < ma50:
                 btc = upbit.get_balance(ticker.split('-')[1])
                 if btc > 0:
-                    upbit.sell_market_order(ticker, btc * 0.9995, leverage=20)
+                    upbit.sell_market_order(ticker, btc * 0.9995, leverage=1)
 
         time.sleep(1)
     except Exception as e:

@@ -23,6 +23,12 @@ def get_ma15(ticker):
     ma15 = df['close'].rolling(15).mean().iloc[-1]
     return ma15
 
+def get_ma50(ticker):
+    """50일 이동 평균선 조회"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=50)
+    ma50 = df['close'].rolling(50).mean().iloc[-1]
+    return ma50
+
 def get_balance(ticker):
     """잔고 조회"""
     balances = upbit.get_balances()
@@ -52,15 +58,18 @@ while True:
         if start_time < now < end_time - datetime.timedelta(seconds=10):
             target_price = get_target_price("KRW-BTC", 0.5)
             ma15 = get_ma15("KRW-BTC")
+            ma50 = get_ma50("KRW-BTC")
             current_price = get_current_price("KRW-BTC")
-            if target_price < current_price and ma15 < current_price:
+            if target_price < current_price and ma15 < current_price and ma50 < current_price:
                 krw = get_balance("KRW")
                 if krw > 5000:
                     upbit.buy_market_order("KRW-BTC", krw*0.9995)
         else:
-            btc = get_balance("BTC")
-            if btc > 0.00008:
-                upbit.sell_market_order("KRW-BTC", btc*0.9995)
+            ma50 = get_ma50("KRW-BTC")
+            if ma50 > current_price:
+                btc = get_balance("BTC")
+                if btc > 0.00008:
+                    upbit.sell_market_order("KRW-BTC", btc*0.9995)
         time.sleep(1)
     except Exception as e:
         print(e)

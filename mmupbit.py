@@ -1,6 +1,8 @@
 import time
 import pyupbit
 import datetime
+import requests
+import talib
 
 access = "your-access-key"
 secret = "your-secret-key"

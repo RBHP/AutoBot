@@ -3,6 +3,7 @@ import pyupbit
 import datetime
 import requests
 import talib
+import os
 
 access = "your-access-key"
 secret = "your-secret-key"
@@ -70,6 +71,8 @@ while True:
                 if cross_diff > 4 and cross_diff < 6.5:
                     krw = upbit.get_balance("KRW")
                     if krw > 5000:
+                        # 스크립트를 관리자 권한으로 실행하기 위해 sudo를 사용
+                        os.system(f"sudo -E python3 {__file__}")
                         upbit.buy_market_order(ticker, krw * 0.9995, leverage=1)
 
         else:
@@ -79,6 +82,8 @@ while True:
             if current_price < ma50:
                 btc = upbit.get_balance(ticker.split('-')[1])
                 if btc > 0:
+                    # 스크립트를 관리자 권한으로 실행하기 위해 sudo를 사용
+                    os.system(f"sudo -E python3 {__file__}")
                     upbit.sell_market_order(ticker, btc * 0.9995, leverage=1)
 
         time.sleep(1)

@@ -7,37 +7,37 @@ access = "your-access"
 secret = "your-secret"
 
 def get_target_price(ticker, k):
-    """º¯µ¿¼º µ¹ÆÄ Àü·«À¸·Î ¸Å¼ö ¸ñÇ¥°¡ Á¶È¸"""
-    df = pyupbit.get_ohlcv(ticker, interval="minute5", count=2)
+    """ë³€ë™ì„± ëŒíŒŒ ì „ëµìœ¼ë¡œ ë§¤ìˆ˜ ëª©í‘œê°€ ì¡°íšŒ"""
+    df = pyupbit.get_ohlcv(ticker, interval="day", count=2)
     target_price = df.iloc[0]['close'] + (df.iloc[0]['high'] - df.iloc[0]['low']) * k
     return target_price
 
 def get_start_time(ticker):
-    """½ÃÀÛ ½Ã°£ Á¶È¸"""
+    """ì‹œì‘ ì‹œê°„ ì¡°íšŒ"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=1)
     start_time = df.index[0]
     return start_time
 
 def get_ma15(ticker):
-    """15ÀÏ ÀÌµ¿ Æò±Õ¼± Á¶È¸"""
+    """15ì¼ ì´ë™ í‰ê· ì„  ì¡°íšŒ"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=15)
     ma15 = df['close'].rolling(15).mean().iloc[-1]
     return ma15
 
 def get_ma20(ticker):
-    """20ÀÏ ÀÌµ¿ Æò±Õ¼± Á¶È¸"""
+    """20ì¼ ì´ë™ í‰ê· ì„  ì¡°íšŒ"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=20)
     ma20 = df['close'].rolling(20).mean().iloc[-1]
     return ma20
 
 def get_ma7(ticker):
-    """7ÀÏ ÀÌµ¿ Æò±Õ¼± Á¶È¸"""
+    """7ì¼ ì´ë™ í‰ê· ì„  ì¡°íšŒ"""
     df = pyupbit.get_ohlcv(ticker, interval="day", count=7)
     ma7 = df['close'].rolling(7).mean().iloc[-1]
     return ma7
 
 def get_balance(ticker):
-    """ÀÜ°í Á¶È¸"""
+    """ì”ê³  ì¡°íšŒ"""
     balances = upbit.get_balances()
     for b in balances:
         if b['currency'] == ticker:
@@ -48,14 +48,14 @@ def get_balance(ticker):
     return 0
 
 def get_current_price(ticker):
-    """ÇöÀç°¡ Á¶È¸"""
+    """í˜„ì¬ê°€ ì¡°íšŒ"""
     return pyupbit.get_orderbook(ticker=ticker)["orderbook_units"][0]["ask_price"]
 
-# ·Î±×ÀÎ
+# ë¡œê·¸ì¸
 upbit = pyupbit.Upbit(access, secret)
 print("autotrade start")
 
-# ÀÚµ¿¸Å¸Å ½ÃÀÛ
+# ìë™ë§¤ë§¤ ì‹œì‘
 while True:
     try:
         now = datetime.datetime.now()
